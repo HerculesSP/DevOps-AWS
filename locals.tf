@@ -116,15 +116,7 @@ locals {
   }
   s3s = {
     raw = {
-      name = "raw"
-    }
-
-    trusted = {
-      name = "trusted"
-    }
-
-    client = {
-      name = "client"
+      name = "blobs"
     }
   }
 }
