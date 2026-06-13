@@ -154,18 +154,6 @@ variable "instance_type" {
   default     = "t3.micro"
 }
 
-variable "efs_token" {
-  type        = string
-  description = "Token de criação do EFS"
-  default     = "token"
-}
-
-variable "ebs_availability_zone" {
-  type        = string
-  description = "AZ do EBS"
-  default     = "a"
-}
-
 variable "app_docker_image" {
   type        = string
   description = "URL da imagem da aplicação"
