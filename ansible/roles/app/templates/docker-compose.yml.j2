@@ -1,0 +1,26 @@
+services:
+  app1:
+    image: {{ app_image }}
+    container_name: app1
+    restart: unless-stopped
+    env_file:
+      - .env
+
+  app2:
+    image: {{ app_image }}
+    container_name: app2
+    restart: unless-stopped
+    env_file:
+      - .env
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - app1
+      - app2
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro

@@ -1,7 +1,5 @@
 app_image: "herculessp/pezao-sound-api:main"
-container_name: "app"
 db_port: 3306
 db_name: "stockflow"
 db_username: "stockflow"
 db_password: "StockFlow@2026"
-app_internal_port: 8080
