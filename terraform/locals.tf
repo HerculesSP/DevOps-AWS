@@ -89,15 +89,7 @@ locals {
       public_ip   = false
       sg_ids      = [aws_security_group.app.id]
       volume_size = 15
-      user_data = templatefile("${path.module}/scripts/configApp.sh.tpl", {
-        docker_image   = var.app_docker_image
-        container_name = "app"
-        db_private_ip  = aws_instance.instance_db.private_ip
-        db_name        = var.db_name
-        db_username    = var.db_username
-        db_password    = var.db_password
-        db_port        = "3306"
-      })
+      user_data = "echo oi"
     }
 
     app-2 = {
@@ -106,15 +98,7 @@ locals {
       public_ip   = false
       sg_ids      = [aws_security_group.app.id]
       volume_size = 15
-      user_data = templatefile("${path.module}/scripts/configApp.sh.tpl", {
-        docker_image   = var.app_docker_image
-        container_name = "app"
-        db_private_ip  = aws_instance.instance_db.private_ip
-        db_name        = var.db_name
-        db_username    = var.db_username
-        db_password    = var.db_password
-        db_port        = "3306"
-      })
+      user_data = "echo oi"
     }
   }
   db = {

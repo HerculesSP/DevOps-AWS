@@ -139,7 +139,7 @@ variable "nacl_web_cidr" {
 variable "ami_id" {
   type        = string
   description = "Id da AMI utilizada nas instâncias"
-  default     = "ami-0ec10929233384c7f"
+  default     = "ami-0521cb2d60cfbb1a6"
 }
 
 variable "key_name" {

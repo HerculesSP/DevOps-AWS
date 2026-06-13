@@ -3,25 +3,37 @@
 sleep 100
 set -e
 
-export DEBIAN_FRONTEND=noninteractive
+sudo dnf update -y
+sudo dnf install -y mariadb105-server
 
-sudo apt-get update -y
-sudo apt-get install -y mysql-server
+MYSQL_CNF="/etc/my.cnf.d/mariadb-server.cnf"
 
-sudo sed -i 's/^bind-address\s*=.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
-
-if ! sudo grep -q '^bind-address' /etc/mysql/mysql.conf.d/mysqld.cnf; then
-  echo 'bind-address = 0.0.0.0' | sudo tee -a /etc/mysql/mysql.conf.d/mysqld.cnf >/dev/null
+if [ ! -f "$MYSQL_CNF" ]; then
+  MYSQL_CNF="/etc/my.cnf"
 fi
 
-sudo sed -i 's/^mysqlx-bind-address\s*=.*/mysqlx-bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf || true
+sudo mkdir -p "$(dirname "$MYSQL_CNF")"
 
-sudo sed -i 's/^skip-networking/# skip-networking/' /etc/mysql/mysql.conf.d/mysqld.cnf || true
+if ! sudo grep -q '^\[mysqld\]' "$MYSQL_CNF"; then
+  echo '[mysqld]' | sudo tee -a "$MYSQL_CNF" >/dev/null
+fi
 
-sudo systemctl enable mysql
-sudo systemctl restart mysql
+if sudo grep -q '^bind-address' "$MYSQL_CNF"; then
+  sudo sed -i 's/^bind-address\s*=.*/bind-address = 0.0.0.0/' "$MYSQL_CNF"
+else
+  echo 'bind-address = 0.0.0.0' | sudo tee -a "$MYSQL_CNF" >/dev/null
+fi
 
-until systemctl is-active --quiet mysql; do
+if sudo grep -q '^mysqlx-bind-address' "$MYSQL_CNF"; then
+  sudo sed -i 's/^mysqlx-bind-address\s*=.*/mysqlx-bind-address = 0.0.0.0/' "$MYSQL_CNF" || true
+fi
+
+sudo sed -i 's/^skip-networking/# skip-networking/' "$MYSQL_CNF" || true
+
+sudo systemctl enable mariadb
+sudo systemctl restart mariadb
+
+until systemctl is-active --quiet mariadb; do
   sleep 2
 done
 
