@@ -115,7 +115,7 @@ locals {
     })
   }
   s3s = {
-    raw = {
+    blobs = {
       name = "blobs"
     }
   }
