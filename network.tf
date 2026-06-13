@@ -14,53 +14,28 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-resource "aws_subnet" "public" {
-  for_each = local.public_subnets
+resource "aws_subnet" "subnets" {
+  for_each = local.subnets
 
   vpc_id                  = aws_vpc.main.id
   cidr_block              = each.value.cidr
   availability_zone       = each.value.az
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = each.value.public_ip
 
   tags = {
     Name = each.value.name
   }
 }
 
-resource "aws_subnet" "app" {
-  for_each = local.app_subnets
-
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = each.value.cidr
-  availability_zone       = each.value.az
-  map_public_ip_on_launch = false
-
-  tags = {
-    Name = each.value.name
-  }
-}
-
-resource "aws_subnet" "web" {
-  for_each = local.web_subnets
-
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = each.value.cidr
-  availability_zone       = each.value.az
-  map_public_ip_on_launch = false
+resource "aws_db_subnet_group" "db" {
+  name = "app-db-subnet-group"
+  subnet_ids = [
+    aws_subnet.subnets["db-1"].id,
+    aws_subnet.subnets["db-2"].id
+  ]
 
   tags = {
-    Name = each.value.name
-  }
-}
-
-resource "aws_subnet" "db" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.db_subnet_cidr
-  availability_zone       = "${var.aws_region}${var.db_subnet_availability_zone}"
-  map_public_ip_on_launch = false
-
-  tags = {
-    Name = "${var.db_subnet_name}-${var.vpc_name}-${var.aws_region}${var.db_subnet_availability_zone}"
+    Name = "app-db-subnet-group"
   }
 }
 
@@ -76,7 +51,7 @@ resource "aws_eip" "nat" {
 
 resource "aws_nat_gateway" "ngw" {
   allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public["public-1"].id
+  subnet_id     = aws_subnet.subnets["public-1"].id
 
   depends_on = [aws_internet_gateway.igw]
 
@@ -111,44 +86,30 @@ resource "aws_route_table" "private" {
   }
 }
 
-resource "aws_route_table_association" "public_1" {
-  subnet_id      = aws_subnet.public["public-1"].id
+resource "aws_route_table_association" "public" {
+  for_each = {
+    for key in ["public-1", "public-2"] : key => aws_subnet.subnets[key]
+  }
+
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
 }
 
-resource "aws_route_table_association" "public_2" {
-  subnet_id      = aws_subnet.public["public-2"].id
-  route_table_id = aws_route_table.public.id
-}
+resource "aws_route_table_association" "private" {
+  for_each = {
+    for key in ["app-1", "app-2", "web-1", "web-2", "db-1", "db-2"] : key => aws_subnet.subnets[key]
+  }
 
-resource "aws_route_table_association" "app_1" {
-  subnet_id      = aws_subnet.app["app-1"].id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "app_2" {
-  subnet_id      = aws_subnet.app["app-2"].id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "web_1" {
-  subnet_id      = aws_subnet.web["web-1"].id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "web_2" {
-  subnet_id      = aws_subnet.web["web-2"].id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "db" {
-  subnet_id      = aws_subnet.db.id
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.private.id
 }
 
 resource "aws_network_acl" "app" {
   vpc_id     = aws_vpc.main.id
-  subnet_ids = [for subnet in values(aws_subnet.app) : subnet.id]
+ subnet_ids = [
+    aws_subnet.subnets["app-1"].id,
+    aws_subnet.subnets["app-2"].id
+  ]
 
   ingress {
     rule_no    = 100
@@ -211,7 +172,10 @@ resource "aws_network_acl" "app" {
 
 resource "aws_network_acl" "web" {
   vpc_id     = aws_vpc.main.id
-  subnet_ids = [for subnet in values(aws_subnet.web) : subnet.id]
+  subnet_ids = [
+    aws_subnet.subnets["web-1"].id,
+    aws_subnet.subnets["web-2"].id
+  ]
 
   ingress {
     rule_no    = 100
@@ -274,8 +238,11 @@ resource "aws_network_acl" "web" {
 
 resource "aws_network_acl" "db" {
   vpc_id     = aws_vpc.main.id
-  subnet_ids = [aws_subnet.db.id]
-
+  subnet_ids = [
+    aws_subnet.subnets["db-1"].id,
+    aws_subnet.subnets["db-2"].id
+  ]
+  
   ingress {
     rule_no    = 100
     protocol   = "tcp"

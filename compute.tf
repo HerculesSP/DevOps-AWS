@@ -27,8 +27,8 @@ resource "aws_lb" "main" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb.id]
   subnets = [
-    aws_subnet.public["public-1"].id,
-    aws_subnet.public["public-2"].id
+    aws_subnet.subnets["public-1"].id,
+    aws_subnet.subnets["public-2"].id
   ]
 
   tags = {

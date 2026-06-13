@@ -82,16 +82,28 @@ variable "db_subnet_name" {
   default     = "db_subnet"
 }
 
-variable "db_subnet_cidr" {
+variable "db_subnet_1_cidr" {
   type        = string
-  description = "CIDR da subrede de banco de dados"
-  default     = "10.0.2.0/24"
+  description = "CIDR da subrede 1 de banco de dados"
+  default     = "10.0.2.0/25"
 }
 
-variable "db_subnet_availability_zone" {
+variable "db_subnet_1_availability_zone" {
   type        = string
-  description = "AZ da subrede de banco de dados"
+  description = "AZ da subrede 1 de banco de dados"
   default     = "a"
+}
+
+variable "db_subnet_2_cidr" {
+  type        = string
+  description = "CIDR da subrede 2 de banco de dados"
+  default     = "10.0.2.128/25"
+}
+
+variable "db_subnet_2_availability_zone" {
+  type        = string
+  description = "AZ da subrede 2 de banco de dados"
+  default     = "b"
 }
 
 variable "web_subnet_name" {
