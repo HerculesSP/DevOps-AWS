@@ -7,7 +7,6 @@ resource "aws_instance" "instances" {
   vpc_security_group_ids      = each.value.sg_ids
   key_name                    = var.key_name
   associate_public_ip_address = each.value.public_ip
-  user_data                   = each.value.user_data
 
   root_block_device {
     volume_size           = each.value.volume_size

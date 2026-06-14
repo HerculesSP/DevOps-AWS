@@ -175,5 +175,5 @@ variable "db_name" {
 variable "db_password" {
   type        = string
   description = "Senha do usuário do banco de dados"
-  default     = "StockFlow@2026"
+  default     = "StockFlow2026!"
 }

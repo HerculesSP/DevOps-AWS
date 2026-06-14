@@ -1,0 +1,5 @@
+- name: Config do RDS
+  hosts: bastion_host
+  become: true
+  roles:
+    - db

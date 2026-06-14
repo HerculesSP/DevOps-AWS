@@ -252,51 +252,6 @@ resource "aws_network_acl" "db" {
     to_port    = 3306
   }
 
-  ingress {
-    rule_no    = 110
-    protocol   = "tcp"
-    action     = "allow"
-    cidr_block = var.vpc_cidr
-    from_port  = 22
-    to_port    = 22
-  }
-
-  ingress {
-    rule_no    = 120
-    protocol   = "tcp"
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 1024
-    to_port    = 65535
-  }
-
-  egress {
-    rule_no    = 100
-    protocol   = "tcp"
-    action     = "allow"
-    cidr_block = var.vpc_cidr
-    from_port  = 3306
-    to_port    = 3306
-  }
-
-  egress {
-    rule_no    = 105
-    protocol   = "tcp"
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 443
-    to_port    = 443
-  }
-
-  egress {
-    rule_no    = 110
-    protocol   = "tcp"
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 80
-    to_port    = 80
-  }
-
   egress {
     rule_no    = 120
     protocol   = "tcp"

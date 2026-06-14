@@ -10,21 +10,34 @@ resource "local_file" "ansible_inventory" {
   })
 }
 
-resource "local_file" "ansible_app_infra_vars" {
+resource "local_file" "ansible_all_vars" {
   filename        = "${path.module}/../ansible/inventories/production/group_vars/all.yml"
   file_permission = "0644"
 
   content = yamlencode({
-    db_host = aws_instance.instance_db.private_ip
+    db_host = aws_db_instance.instance_db.address
+    db_port     = 3306
+    db_name     = var.db_name
+    db_username = var.db_username
+    db_password = var.db_password
+  })
+}
+
+resource "local_file" "ansible_app_vars" {
+  filename        = "${path.module}/../ansible/inventories/production/group_vars/app.yml"
+  file_permission = "0644"
+
+  content = yamlencode({
+    app_image   = var.app_docker_image
   })
 }
 
 resource "null_resource" "run_ansible" {
   depends_on = [
     local_file.ansible_inventory,
-    local_file.ansible_app_infra_vars,
+    local_file.ansible_all_vars,
     aws_instance.instances,
-    aws_instance.instance_db
+    aws_db_instance.instance_db
   ]
 
   provisioner "local-exec" {

@@ -1,0 +1,16 @@
+- name: Garantir cliente MySQL
+  ansible.builtin.package:
+    name: mariadb105
+    state: present
+
+- name: Copiar script SQL para a bastion
+  ansible.builtin.copy:
+    src: files/bd.sql
+    dest: /tmp/init.sql
+    mode: "0644"
+
+- name: Importar script no RDS
+  ansible.builtin.shell: >
+    mysql -h {{ db_host }} -P {{ db_port }}
+    -u {{ db_username }} -p'{{ db_password }}'
+    {{ db_name }} < /tmp/init.sql
