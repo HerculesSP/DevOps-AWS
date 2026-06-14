@@ -5,12 +5,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/api/health || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
 
   app2:
     image: {{ app_image }}
@@ -18,12 +12,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/api/health || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
 
   nginx:
     image: nginx:alpine

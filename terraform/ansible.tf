@@ -47,8 +47,11 @@ resource "null_resource" "configurando_db" {
 
 resource "null_resource" "configurando_app" {
   depends_on = [
+    local_file.ansible_inventory,
+    local_file.ansible_all_vars,
+    local_file.ansible_app_vars,
     aws_instance.instances,
-    null_resource.configurando_db
+    aws_db_instance.instance_db
   ]
 
   provisioner "local-exec" {

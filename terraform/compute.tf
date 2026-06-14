@@ -51,6 +51,7 @@ resource "aws_lb_target_group" "web" {
 }
 
 resource "aws_lb_target_group" "app" {
+  
   name        = "app-tg"
   port        = 80
   protocol    = "HTTP"
