@@ -1,0 +1,17 @@
+- name: Instalação das dependências
+  hosts: base
+  become: true
+  gather_facts: false
+
+  pre_tasks:
+    - name: Espera SSH ficar disponível
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        sleep: 5
+        timeout: 600
+
+    - name: Coleta facts depois da conexão
+      ansible.builtin.setup:
+
+  roles:
+    - base

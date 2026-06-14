@@ -4,6 +4,8 @@ resource "local_file" "ansible_inventory" {
 
   content = templatefile("${path.module}/scripts/hosts.ini.tftpl", {
     bastion_public_ip = aws_instance.instances["bastion"].public_ip
+    web_1_private_ip = aws_instance.instances["web-1"].private_ip
+    web_2_private_ip = aws_instance.instances["web-2"].private_ip
     app_1_private_ip  = aws_instance.instances["app-1"].private_ip
     app_2_private_ip  = aws_instance.instances["app-2"].private_ip
     private_key_path  = "../terraform/${var.key_name}.pem"
@@ -32,6 +34,18 @@ resource "local_file" "ansible_app_vars" {
   })
 }
 
+resource "null_resource" "configurando_dependencias" {
+  depends_on = [
+    local_file.ansible_inventory,
+    aws_instance.instances,
+  ]
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../ansible"
+    command     = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventories/production/hosts.ini playbooks/base.yml"
+  }
+}
+
 resource "null_resource" "configurando_db" {
   depends_on = [
     local_file.ansible_inventory,
@@ -51,7 +65,8 @@ resource "null_resource" "configurando_app" {
     local_file.ansible_all_vars,
     local_file.ansible_app_vars,
     aws_instance.instances,
-    aws_db_instance.instance_db
+    aws_db_instance.instance_db,
+    null_resource.configurando_dependencias
   ]
 
   provisioner "local-exec" {
