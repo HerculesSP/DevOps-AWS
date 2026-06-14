@@ -51,6 +51,7 @@ resource "aws_lb_target_group" "web" {
 }
 
 resource "aws_lb_target_group" "app" {
+  depends_on = [ null_resource.configurando_app ]
   
   name        = "app-tg"
   port        = 80

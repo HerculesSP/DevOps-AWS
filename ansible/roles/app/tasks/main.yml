@@ -56,3 +56,18 @@
     state: present
     pull: always
 
+- name: Esperar app1 ficar healthy
+  community.docker.docker_container_info:
+    name: app1
+  register: app1_info
+  until: app1_info.container.State.Health.Status == 'healthy'
+  retries: 30
+  delay: 5
+
+- name: Esperar app2 ficar healthy
+  community.docker.docker_container_info:
+    name: app2
+  register: app2_info
+  until: app2_info.container.State.Health.Status == 'healthy'
+  retries: 30
+  delay: 5
