@@ -25,3 +25,5 @@ terraform.tfvars
 .env
 
 hosts.ini
+**/group_vars/*
+!**/group_vars/.gitkeep

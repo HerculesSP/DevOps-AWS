@@ -32,12 +32,23 @@ resource "local_file" "ansible_app_vars" {
   })
 }
 
-resource "null_resource" "run_ansible" {
+resource "null_resource" "configurando_db" {
   depends_on = [
     local_file.ansible_inventory,
     local_file.ansible_all_vars,
-    aws_instance.instances,
     aws_db_instance.instance_db
+  ]
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../ansible"
+    command     = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventories/production/hosts.ini playbooks/db.yml"
+  }
+}
+
+resource "null_resource" "configurando_app" {
+  depends_on = [
+    aws_instance.instances,
+    null_resource.configurando_db
   ]
 
   provisioner "local-exec" {
