@@ -2,11 +2,13 @@
 
 Projeto de automação de infraestrutura e configuração de ambiente na AWS usando Terraform e Ansible.
 
-O Terraform é responsável pelo provisionamento da infraestrutura. O Ansible entra na sequência para preparar os hosts, configurar a aplicação e aplicar a configuração do banco de dados.
+O Terraform é responsável pelo provisionamento da infraestrutura e executa o Ansible para preparar as instâncias, configurar a aplicação, website e inserir o script SQL no banco de dados.
+
+Infraestrutura para atender aos requisitos do projeto de Pesquisa e Inovação desenvolvido durante o 3° e 4° semestre do curso de Bacharelado em Ciências da Computação na São Paulo Tech School. [Organização no GitHub com os repositórios do projeto.](https://github.com/pezao-sound-projeto-de-extensao)
 
 ## Arquitetura
 
-![Diagrama da arquitetura](./docs/aws-diagram.png)
+<img width="1246" height="1326" alt="Diagrama DevOps drawio" src="https://github.com/user-attachments/assets/d18d5bc7-f89b-4ffd-8522-f8d8434bc1d5" />
 
 ## Estrutura do repositório
 
@@ -67,6 +69,7 @@ A pasta `ansible/` concentra a configuração dos hosts provisionados.
 - `playbooks/base.yml`: preparação base das instâncias.
 - `playbooks/db.yml`: configuração do banco de dados.
 - `playbooks/app.yml`: configuração e publicação da aplicação.
+- `playbooks/web.yml`: configuração e publicação do website.
 
 ## Fluxo de execução
 
