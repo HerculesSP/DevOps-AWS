@@ -160,6 +160,13 @@ variable "app_docker_image" {
   default     = "herculessp/pezao-sound-api:main"
 }
 
+variable "web_docker_image" {
+  type        = string
+  description = "URL da imagem web"
+  default     = "herculessp/pezao-sound-web:main"
+}
+
+
 variable "db_username" {
   type        = string
   description = "Usuário do banco de dados"

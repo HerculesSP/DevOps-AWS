@@ -115,7 +115,7 @@ resource "aws_security_group" "db" {
     security_groups = [aws_security_group.app.id]
   }
 
-    ingress {
+  ingress {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"

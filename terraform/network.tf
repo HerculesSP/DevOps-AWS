@@ -105,8 +105,8 @@ resource "aws_route_table_association" "private" {
 }
 
 resource "aws_network_acl" "app" {
-  vpc_id     = aws_vpc.main.id
- subnet_ids = [
+  vpc_id = aws_vpc.main.id
+  subnet_ids = [
     aws_subnet.subnets["app-1"].id,
     aws_subnet.subnets["app-2"].id
   ]
@@ -171,7 +171,7 @@ resource "aws_network_acl" "app" {
 }
 
 resource "aws_network_acl" "web" {
-  vpc_id     = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id
   subnet_ids = [
     aws_subnet.subnets["web-1"].id,
     aws_subnet.subnets["web-2"].id
@@ -237,12 +237,12 @@ resource "aws_network_acl" "web" {
 }
 
 resource "aws_network_acl" "db" {
-  vpc_id     = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id
   subnet_ids = [
     aws_subnet.subnets["db-1"].id,
     aws_subnet.subnets["db-2"].id
   ]
-  
+
   ingress {
     rule_no    = 100
     protocol   = "tcp"

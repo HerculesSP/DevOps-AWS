@@ -1,0 +1,5 @@
+- name: Deploy do web
+  hosts: web
+  become: true
+  roles:
+    - web

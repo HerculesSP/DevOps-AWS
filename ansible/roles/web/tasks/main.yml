@@ -1,0 +1,16 @@
+- name: Renderizar arquivo .env
+  ansible.builtin.template:
+    src: web.env.j2
+    dest: /opt/app/.env
+    mode: "0600"
+
+- name: Rodar container web
+  community.docker.docker_container:
+    name: web
+    image: "{{ web_image }}"
+    state: started
+    pull: true
+    env_file: /opt/app/.env
+    restart_policy: always
+    published_ports:
+      - "80:80"
