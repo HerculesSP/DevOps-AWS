@@ -15,33 +15,58 @@ Infraestrutura para atender aos requisitos do projeto de Pesquisa e Inovação d
 ```bash
 .
 ├── ansible
-│   ├── ansible.cfg
-│   ├── inventories
-│   │   └── production
-│   │       └── group_vars
-│   ├── playbooks
-│   │   ├── app.yml
-│   │   ├── base.yml
-│   │   └── db.yml
-│   ├── requirements.yml
-│   └── roles
-│       ├── app
-│       ├── base
-│       ├── db
-│       └── web
-├── terraform
-│   ├── ansible.tf
-│   ├── compute.tf
-│   ├── database.tf
-│   ├── locals.tf
-│   ├── network.tf
-│   ├── providers.tf
-│   ├── scripts
-│   │   └── hosts.ini.tftpl
-│   ├── security.tf
-│   ├── storage.tf
-│   └── variables.tf
-└── README.md
+│   ├── ansible.cfg
+│   ├── inventories
+│   │   └── production
+│   │       ├── group_vars
+│   │       │   ├── all.yml
+│   │       │   ├── app.yml
+│   │       │   └── web.yml
+│   │       └── hosts.ini
+│   ├── playbooks
+│   │   ├── app.yml
+│   │   ├── base.yml
+│   │   ├── db.yml
+│   │   └── web.yml
+│   ├── requirements.yml
+│   └── roles
+│       ├── app
+│       │   ├── tasks
+│       │   │   └── main.yml
+│       │   └── templates
+│       │       ├── app.env.j2
+│       │       ├── docker-compose.yml.j2
+│       │       └── nginx.conf.j2
+│       ├── base
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── db
+│       │   ├── files
+│       │   │   └── bd.sql
+│       │   └── tasks
+│       │       └── main.yml
+│       └── web
+│           ├── tasks
+│           │   └── main.yml
+│           └── templates
+│               └── web.env.j2
+└── terraform
+    ├── ansible.tf
+    ├── chave.pem
+    ├── compute.tf
+    ├── database.tf
+    ├── locals.tf
+    ├── network.tf
+    ├── providers.tf
+    ├── scripts
+    │   └── hosts.ini.tftpl
+    ├── security.tf
+    ├── storage.tf
+    ├── terraform.tfstate
+    ├── terraform.tfstate.backup
+    └── variables.tf
+
+
 ```
 
 ## Organização do projeto
