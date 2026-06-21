@@ -48,7 +48,7 @@ resource "aws_lb_target_group" "web" {
   target_type = "instance"
 
   health_check {
-    path     = "/"
+    path     = "/health"
     port     = "traffic-port"
     protocol = "HTTP"
     matcher  = "200"

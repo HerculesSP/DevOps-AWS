@@ -17,8 +17,8 @@
 
 - name: Instalar Docker Compose v2
   ansible.builtin.get_url:
-    url: https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64
-    dest: /usr/local/lib/docker/cli-plugins/docker-compose
+    url: "https://github.com/docker/compose/releases/download/v2.29.0/docker-compose-linux-x86_64"
+    dest: "/usr/local/lib/docker/cli-plugins/docker-compose"
     mode: "0755"
 
 - name: Validar Docker Compose v2

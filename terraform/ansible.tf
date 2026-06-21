@@ -39,7 +39,7 @@ resource "local_file" "ansible_web_vars" {
   file_permission = "0644"
 
   content = yamlencode({
-    alb_url   = "htpp://${aws_lb.main.dns_name}/api/"
+    alb_url   = "http://${aws_lb.main.dns_name}/api/"
     web_image = var.web_docker_image
   })
 }
@@ -88,7 +88,6 @@ resource "null_resource" "configurando_app" {
 resource "null_resource" "configurando_web" {
   depends_on = [
     local_file.ansible_inventory,
-    local_file.ansible_all_vars,
     local_file.ansible_web_vars,
     aws_instance.instances,
     null_resource.configurando_dependencias
