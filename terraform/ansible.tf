@@ -90,7 +90,8 @@ resource "null_resource" "configurando_web" {
     local_file.ansible_inventory,
     local_file.ansible_web_vars,
     aws_instance.instances,
-    null_resource.configurando_dependencias
+    null_resource.configurando_dependencias, 
+    null_resource.configurando_app
   ]
 
   provisioner "local-exec" {

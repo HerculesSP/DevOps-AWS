@@ -14,3 +14,24 @@
     restart_policy: always
     published_ports:
       - "80:80"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+- name: Esperar container web ficar healthy
+  community.docker.docker_container_info:
+    name: web
+  register: web_info
+  until: web_info.container.State.Health.Status == 'healthy'
+  retries: 30
+  delay: 5
+
+- name: Falhar se o container web não ficou healthy
+  ansible.builtin.assert:
+    that:
+      - web_info.container.State.Health.Status == 'healthy'
+    fail_msg: "Container web está {{ web_info.container.State.Health.Status }} após aguardar o tempo limite"
+    quiet: true
