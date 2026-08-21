@@ -143,7 +143,6 @@ resource "aws_wafv2_web_acl" "main" {
     allow {}
   }
 
-  # Respostas customizadas
   custom_response_body {
     key          = "geo_blocked"
     content_type = "APPLICATION_JSON"
@@ -399,7 +398,6 @@ resource "aws_wafv2_web_acl" "main" {
   }
 }
 
-# Associação do WAF ao ALB
 resource "aws_wafv2_web_acl_association" "alb" {
   resource_arn = aws_lb.main.arn
   web_acl_arn  = aws_wafv2_web_acl.main.arn

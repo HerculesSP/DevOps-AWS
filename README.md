@@ -101,6 +101,9 @@ A pasta `ansible/` concentra a configuração dos hosts provisionados.
 ### O Terraform chama o ansible automaticamente
 
 ```bash
+cd ansible
+ansible-galaxy install -r requirements.yml 
+cd ..
 cd terraform
 terraform init
 terraform plan
