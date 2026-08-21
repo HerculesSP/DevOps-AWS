@@ -124,15 +124,9 @@ variable "web_subnet_2_cidr" {
   default     = "10.0.3.128/25"
 }
 
-variable "nacl_app_cidr" {
+variable "nacl_alb_cidr" {
   type        = string
-  description = "CIDR para entrada personalizada na app"
-  default     = "10.0.3.0/24"
-}
-
-variable "nacl_web_cidr" {
-  type        = string
-  description = "CIDR para entrada personalizada na web"
+  description = "CIDR para entrada personalizada nas instâncias, corresponde ao CIDR do ALB"
   default     = "10.0.0.0/24"
 }
 

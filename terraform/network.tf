@@ -115,7 +115,7 @@ resource "aws_network_acl" "app" {
     rule_no    = 100
     protocol   = "tcp"
     action     = "allow"
-    cidr_block = var.nacl_app_cidr
+    cidr_block = var.nacl_alb_cidr
     from_port  = 80
     to_port    = 80
   }
@@ -181,7 +181,7 @@ resource "aws_network_acl" "web" {
     rule_no    = 100
     protocol   = "tcp"
     action     = "allow"
-    cidr_block = var.nacl_web_cidr
+    cidr_block = var.nacl_alb_cidr
     from_port  = 80
     to_port    = 80
   }
@@ -247,7 +247,7 @@ resource "aws_network_acl" "db" {
     rule_no    = 100
     protocol   = "tcp"
     action     = "allow"
-    cidr_block = var.nacl_app_cidr
+    cidr_block = var.vpc_cidr
     from_port  = 3306
     to_port    = 3306
   }
