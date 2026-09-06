@@ -178,3 +178,9 @@ variable "db_password" {
   description = "Senha do usuário do banco de dados"
   default     = "StockFlow2026!"
 }
+
+variable "alert_email" {
+  type        = string
+  description = "Email de quem receberá notificação da AWS"
+  default     = "hercules.pereira@sptech.school"
+}
