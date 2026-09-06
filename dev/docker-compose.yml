@@ -1,0 +1,99 @@
+services:
+  db:
+    image: mysql:8
+    container_name: db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "StockFlow2026!"
+      MYSQL_DATABASE: "stockflow"
+      MYSQL_USER: "stockflow"
+      MYSQL_PASSWORD: "StockFlow2026!"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data-dev:/var/lib/mysql
+    networks:
+      - dev
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD --silent"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  app:
+    build:
+      context: ../../Back-end
+      dockerfile: Dockerfile
+    container_name: app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/stockflow?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useLegacyDatetimeCode=false
+      SPRING_DATASOURCE_USERNAME: stockflow
+      SPRING_DATASOURCE_PASSWORD: StockFlow2026!
+
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: "false"
+
+      SERVER_PORT: "8080"
+
+    networks:
+      - dev
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://localhost:8080/api/health > /dev/null || exit 1"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  web:
+    build:
+      context: ../../Front-end
+      dockerfile: Dockerfile
+    container_name: web
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      VITE_API_BASE_URL: "http://app:8080/api"
+    networks:
+      - dev
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:80 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - web
+      - app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - dev
+
+networks:
+  dev:
+    name: dev
+
+volumes:
+  mysql-data-dev:

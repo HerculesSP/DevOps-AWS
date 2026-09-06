@@ -96,6 +96,11 @@ A pasta `ansible/` concentra a configuração dos hosts provisionados.
 - `playbooks/app.yml`: configuração e publicação da aplicação.
 - `playbooks/web.yml`: configuração e publicação do website.
 
+## Ambientes
+
+- `/prod`: arquitetura completa
+- `/dev`:  arquitetura mínima para redução de custos
+
 ## Fluxo de execução
 
 ### O Terraform chama o ansible automaticamente
