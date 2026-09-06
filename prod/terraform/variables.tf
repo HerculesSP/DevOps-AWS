@@ -184,3 +184,9 @@ variable "alert_email" {
   description = "Email de quem receberá notificação da AWS"
   default     = "hercules.pereira@sptech.school"
 }
+
+variable "jwt_secret" {
+  type = string
+  description = "Secret para gerar JWT"
+  default = "supersecretkey1234567890AmandaDanielHerculesIsaakZaqueu"
+}
