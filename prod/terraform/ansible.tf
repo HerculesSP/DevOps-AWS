@@ -24,6 +24,7 @@ resource "local_file" "ansible_all_vars" {
     db_password = var.db_password
     s3 = aws_s3_bucket.s3["blobs"].bucket
     secret = var.jwt_secret
+    cors = aws_lb.main.dns_name
   })
 }
 
