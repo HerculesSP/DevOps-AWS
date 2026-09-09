@@ -1,29 +1,62 @@
 services:
-  db:
-    image: mysql:8
-    container_name: db
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: "StockFlow2026!"
-      MYSQL_DATABASE: "stockflow"
-      MYSQL_USER: "stockflow"
-      MYSQL_PASSWORD: "StockFlow2026!"
+  floci:
+    image: floci/floci:latest
+    container_name: floci
     ports:
-      - "3307:3306"
+      - "4566:4566"
+    environment:
+      - DEBUG=1
     volumes:
-      - mysql-data-dev:/var/lib/mysql
+      - floci-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-dev
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: stockflow
+      MYSQL_DATABASE: stockflow
+      MYSQL_USER: stockflow
+      MYSQL_PASSWORD: stockflow
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ../prod/ansible/roles/db/files/bd.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - dev
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "mysqladmin ping -h 127.0.0.1 -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD --silent"
-        ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
       timeout: 5s
-      retries: 30
+      retries: 5
       start_period: 30s
+
+  init-s3:
+    image: amazon/aws-cli:latest
+    container_name: init-s3
+    depends_on:
+      floci:
+        condition: service_healthy
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        until aws --endpoint-url http://floci:4566 s3 ls > /dev/null 2>&1; do
+          echo "Floci não disponível"
+          sleep 2
+        done
+        echo "Criando bucket Blobs..."
+        aws --endpoint-url http://floci:4566 s3 mb s3://stockflow-dev || true
+        echo "Bucket Blobs pronto"
 
   app:
     build:
@@ -32,18 +65,12 @@ services:
     container_name: app
     restart: unless-stopped
     depends_on:
-      db:
+      mysql:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/stockflow?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useLegacyDatetimeCode=false
-      SPRING_DATASOURCE_USERNAME: stockflow
-      SPRING_DATASOURCE_PASSWORD: StockFlow2026!
-
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      SPRING_JPA_SHOW_SQL: "false"
-
-      SERVER_PORT: "8080"
-
+      - SPRING_PROFILES_ACTIVE=dev
+      - DB_URL=jdbc:mysql://mysql:3306/stockflow?useTimezone=true&serverTimezone=UTC&characterEncoding=UTF-8
+      - CORS=http://nginx:80
     networks:
       - dev
     healthcheck:
@@ -67,7 +94,7 @@ services:
       app:
         condition: service_healthy
     environment:
-      VITE_API_BASE_URL: "http://app:8080/api"
+      VITE_API_BASE_URL: "http://localhost:8080/api"
     networks:
       - dev
     healthcheck:
@@ -96,4 +123,5 @@ networks:
     name: dev
 
 volumes:
-  mysql-data-dev:
+  floci-data:
+  mysql-data:
