@@ -25,7 +25,7 @@ resource "local_file" "ansible_all_vars" {
     //s3 = aws_s3_bucket.s3["blobs"].bucket
     s3 = "blobs-437920188033-us-east-1-an"
     secret = var.jwt_secret
-    cors = "*"
+    cors = aws_lb.main.dns_name
   })
 }
 
