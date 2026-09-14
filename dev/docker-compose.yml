@@ -90,9 +90,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       DB_URL: jdbc:mysql://mysql:3306/stockflow?serverTimezone=America/Sao_Paulo&characterEncoding=UTF-8
 
-      CORS: "*"
-      CORS_ALLOWED_ORIGIN: "*"
-
+      CORS: "http://localhost:8080"
       AWS_S3_ENDPOINT: http://floci:4566
       AWS_S3_BUCKET: stockflow-dev
       AWS_REGION: us-east-1
