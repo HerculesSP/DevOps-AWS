@@ -88,7 +88,7 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      DB_URL: jdbc:mysql://mysql:3306/stockflow?useTimezone=true&serverTimezone=UTC&characterEncoding=UTF-8
+      DB_URL: jdbc:mysql://mysql:3306/stockflow?serverTimezone=America/Sao_Paulo&characterEncoding=UTF-8
 
       CORS: "*"
       CORS_ALLOWED_ORIGIN: "*"
