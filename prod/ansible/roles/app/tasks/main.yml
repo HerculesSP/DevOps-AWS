@@ -4,12 +4,6 @@
     dest: /opt/app/docker-compose.yml
     mode: "0644"
 
-- name: Renderizar arquivo .env
-  ansible.builtin.template:
-    src: app.env.j2
-    dest: /opt/app/.env
-    mode: "0600"
-
 - name: Renderizar configuração do nginx
   ansible.builtin.template:
     src: nginx.conf.j2
@@ -22,18 +16,10 @@
     state: present
     pull: always
 
-- name: Esperar app1 ficar healthy
+- name: Esperar nginx ficar healthy
   community.docker.docker_container_info:
-    name: app1
-  register: app1_info
-  until: app1_info.container.State.Health.Status == 'healthy'
-  retries: 30
-  delay: 5
-
-- name: Esperar app2 ficar healthy
-  community.docker.docker_container_info:
-    name: app2
-  register: app2_info
-  until: app2_info.container.State.Health.Status == 'healthy'
+    name: nginx
+  register: nginx_info
+  until: nginx_info.container.State.Health.Status == 'healthy'
   retries: 30
   delay: 5

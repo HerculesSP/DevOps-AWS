@@ -1,6 +1,5 @@
 resource "aws_wafv2_web_acl" "main" {
   name        = "main-alb-waf"
-  description = "WAF para ALB: geo-block Brasil, rate limit anti-DDoS, SQLi e known bad inputs"
   scope       = "REGIONAL"
 
   default_action {
@@ -47,7 +46,8 @@ resource "aws_wafv2_web_acl" "main" {
     })
   }
 
-/*  rule {
+  /*
+  rule {
     name     = "AllowHealthChecks"
     priority = 0
 
@@ -75,7 +75,8 @@ resource "aws_wafv2_web_acl" "main" {
       sampled_requests_enabled   = true
     }
   }
-*/
+  */
+
   rule {
     name     = "BlockNonBrazilTraffic"
     priority = 0
@@ -168,45 +169,60 @@ resource "aws_wafv2_web_acl" "main" {
   }
 
   rule {
-    name     = "AllowLargeBodies14MB"
+    name     = "BlockLargeBodiesExceptAllowedPaths"
     priority = 15
+
+    action {
+      block {
+        custom_response {
+          response_code            = 413
+          custom_response_body_key = "body_too_large"
+        }
+      }
+    }
 
     statement {
       and_statement {
         statement {
-          or_statement {
+          not_statement {
             statement {
-              byte_match_statement {
-                search_string = "/imagem"
-                field_to_match {
-                  uri_path {}
+              or_statement {
+                statement {
+                  byte_match_statement {
+                    search_string = "/imagem"
+                    field_to_match {
+                      uri_path {}
+                    }
+                    text_transformation {
+                      priority = 0
+                      type     = "URL_DECODE"
+                    }
+                    positional_constraint = "ENDS_WITH"
+                  }
                 }
-                text_transformation {
-                  priority = 0
-                  type     = "URL_DECODE"
+                statement {
+                  byte_match_statement {
+                    search_string = "/nota"
+                    field_to_match {
+                      uri_path {}
+                    }
+                    text_transformation {
+                      priority = 0
+                      type     = "URL_DECODE"
+                    }
+                    positional_constraint = "ENDS_WITH"
+                  }
                 }
-                positional_constraint = "ENDS_WITH"
-              }
-            }
-            statement {
-              byte_match_statement {
-                search_string = "/nota"
-                field_to_match {
-                  uri_path {}
-                }
-                text_transformation {
-                  priority = 0
-                  type     = "URL_DECODE"
-                }
-                positional_constraint = "ENDS_WITH"
               }
             }
           }
         }
+
+        # Corpo > 8 KB (8192 bytes)
         statement {
           size_constraint_statement {
             comparison_operator = "GT"
-            size                = 14680064
+            size                = 8192
 
             field_to_match {
               body {
@@ -223,56 +239,9 @@ resource "aws_wafv2_web_acl" "main" {
       }
     }
 
-    action {
-      block {
-        custom_response {
-          response_code            = 413
-          custom_response_body_key = "body_too_large"
-        }
-      }
-    }
-
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = "AllowLargeBodies14MB"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  rule {
-    name     = "BlockLargeRequestBodies16KB"
-    priority = 20
-
-    action {
-      block {
-        custom_response {
-          response_code            = 413
-          custom_response_body_key = "body_too_large"
-        }
-      }
-    }
-
-    statement {
-      size_constraint_statement {
-        comparison_operator = "GT"
-        size                = 16384
-
-        field_to_match {
-          body {
-            oversize_handling = "MATCH"
-          }
-        }
-
-        text_transformation {
-          priority = 0
-          type     = "NONE"
-        }
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "BlockLargeRequestBodies16KB"
+      metric_name                = "BlockLargeBodiesExceptAllowedPaths"
       sampled_requests_enabled   = true
     }
   }
@@ -333,6 +302,13 @@ resource "aws_wafv2_web_acl" "main" {
       managed_rule_group_statement {
         vendor_name = "AWS"
         name        = "AWSManagedRulesCommonRuleSet"
+
+        rule_action_override {
+          name = "SizeRestrictions_BODY"
+          action_to_use {
+            allow {}
+          }
+        }
       }
     }
 
@@ -358,7 +334,6 @@ resource "aws_wafv2_web_acl_association" "alb" {
   resource_arn = aws_lb.main.arn
   web_acl_arn  = aws_wafv2_web_acl.main.arn
 }
-
 
 output "alb_dns_name" {
   description = "DNS do ALB"

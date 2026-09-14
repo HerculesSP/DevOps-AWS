@@ -1,4 +1,4 @@
-resource "aws_cloudwatch_dashboard" "main" {
+/*resource "aws_cloudwatch_dashboard" "main" {
   dashboard_name = "pezaosound-dashboard"
 
   dashboard_body = jsonencode({
@@ -163,3 +163,4 @@ resource "aws_cloudwatch_metric_alarm" "db_cpu_high" {
   alarm_actions = [aws_sns_topic.alerts.arn]
   ok_actions    = [aws_sns_topic.alerts.arn]
 }
+*/

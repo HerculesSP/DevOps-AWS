@@ -2,6 +2,8 @@ services:
   floci:
     image: floci/floci:latest
     container_name: floci
+    networks:
+      - dev
     ports:
       - "4566:4566"
     environment:
@@ -47,16 +49,33 @@ services:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - ../s3-dump:/backup
+    networks:
+      - dev
     entrypoint: ["sh", "-c"]
     command:
       - |
+        echo "=== Aguardando Floci ==="
         until aws --endpoint-url http://floci:4566 s3 ls > /dev/null 2>&1; do
           echo "Floci não disponível"
           sleep 2
         done
-        echo "Criando bucket Blobs..."
+
+        echo "=== Criando bucket (se não existir) ==="
         aws --endpoint-url http://floci:4566 s3 mb s3://stockflow-dev || true
-        echo "Bucket Blobs pronto"
+        echo "=== Bucket pronto ==="
+
+        echo "=== Verificando backup para restore ==="
+        if [ ! -d /backup ] || [ -z "$(ls -A /backup 2>/dev/null)" ]; then
+          echo "Nenhum backup encontrado em /backup, pulando restore."
+        else
+          echo "Diretório de backup encontrado, restaurando..."
+          aws --endpoint-url http://floci:4566 \
+            s3 cp /backup s3://stockflow-dev \
+            --recursive
+          echo "=== Restore concluído ==="
+        fi
 
   app:
     build:
@@ -68,9 +87,18 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - DB_URL=jdbc:mysql://mysql:3306/stockflow?useTimezone=true&serverTimezone=UTC&characterEncoding=UTF-8
-      - CORS=http://nginx:80
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:mysql://mysql:3306/stockflow?useTimezone=true&serverTimezone=UTC&characterEncoding=UTF-8
+
+      CORS: "*"
+      CORS_ALLOWED_ORIGIN: "*"
+
+      AWS_S3_ENDPOINT: http://floci:4566
+      AWS_S3_BUCKET: stockflow-dev
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_S3_PATH_STYLE_ACCESS: "true"
     networks:
       - dev
     healthcheck:

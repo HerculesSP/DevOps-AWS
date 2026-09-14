@@ -22,9 +22,10 @@ resource "local_file" "ansible_all_vars" {
     db_name     = var.db_name
     db_username = var.db_username
     db_password = var.db_password
-    s3 = aws_s3_bucket.s3["blobs"].bucket
+    //s3 = aws_s3_bucket.s3["blobs"].bucket
+    s3 = "blobs-437920188033-us-east-1-an"
     secret = var.jwt_secret
-    cors = aws_lb.main.dns_name
+    cors = "*"
   })
 }
 
@@ -78,7 +79,7 @@ resource "null_resource" "configurando_app" {
     local_file.ansible_all_vars,
     local_file.ansible_app_vars,
     aws_instance.instances,
-    aws_db_instance.instance_db,
+    null_resource.configurando_db,
     null_resource.configurando_dependencias
   ]
 

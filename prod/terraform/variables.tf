@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "vpc_name" {
   type        = string
   description = "Nome da VPC"
-  default     = "PezaoSound-vpc"
+  default     = "StockFlow-vpc"
 }
 
 variable "vpc_cidr" {
@@ -55,13 +55,13 @@ variable "app_subnet_name" {
 variable "app_subnet_1_cidr" {
   type        = string
   description = "CIDR da subrede 1 de aplicação"
-  default     = "10.0.1.0/25"
+  default     = "10.0.2.0/25"
 }
 
 variable "app_subnet_2_cidr" {
   type        = string
   description = "CIDR da subrede 2 de aplicação"
-  default     = "10.0.1.128/25"
+  default     = "10.0.2.128/25"
 }
 
 variable "app_web_subnet_1_availability_zone" {
@@ -85,7 +85,7 @@ variable "db_subnet_name" {
 variable "db_subnet_1_cidr" {
   type        = string
   description = "CIDR da subrede 1 de banco de dados"
-  default     = "10.0.2.0/25"
+  default     = "10.0.3.0/25"
 }
 
 variable "db_subnet_1_availability_zone" {
@@ -97,7 +97,7 @@ variable "db_subnet_1_availability_zone" {
 variable "db_subnet_2_cidr" {
   type        = string
   description = "CIDR da subrede 2 de banco de dados"
-  default     = "10.0.2.128/25"
+  default     = "10.0.3.128/25"
 }
 
 variable "db_subnet_2_availability_zone" {
@@ -115,13 +115,13 @@ variable "web_subnet_name" {
 variable "web_subnet_1_cidr" {
   type        = string
   description = "CIDR da subrede 1 WEB"
-  default     = "10.0.3.0/25"
+  default     = "10.0.1.0/25"
 }
 
 variable "web_subnet_2_cidr" {
   type        = string
   description = "CIDR da subrede 2 web"
-  default     = "10.0.3.128/25"
+  default     = "10.0.1.128/25"
 }
 
 variable "nacl_alb_cidr" {
@@ -145,7 +145,7 @@ variable "key_name" {
 variable "instance_type" {
   type        = string
   description = "Tipo de instância"
-  default     = "t3.micro"
+  default     = "t3.medium"
 }
 
 variable "app_docker_image" {

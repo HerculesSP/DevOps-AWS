@@ -31,3 +31,9 @@
     path: /opt/app/nginx
     state: directory
     mode: "0755"
+
+- name: Adicionar usuário ao grupo docker
+  ansible.builtin.user:
+    name: ec2-user
+    groups: docker
+    append: true
