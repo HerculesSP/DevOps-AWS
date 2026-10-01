@@ -10,10 +10,11 @@ resource "aws_instance" "instances" {
   associate_public_ip_address = each.value.public_ip
   iam_instance_profile        = "LabInstanceProfile"
 
-  user_data = <<-EOF
-              #!/bin/bash
-              timedatectl set-timezone America/Sao_Paulo
-              EOF
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+  }
 
   root_block_device {
     volume_size           = each.value.volume_size

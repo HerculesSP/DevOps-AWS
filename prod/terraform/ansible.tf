@@ -23,7 +23,7 @@ resource "local_file" "ansible_all_vars" {
     db_username = var.db_username
     db_password = var.db_password
     //s3 = aws_s3_bucket.s3["blobs"].bucket
-    s3 = "blobs-437920188033-us-east-1-an"
+    s3 = "blob-864676094228-us-east-1-an"
     secret = var.jwt_secret
     cors = aws_lb.main.dns_name
   })
@@ -43,7 +43,7 @@ resource "local_file" "ansible_web_vars" {
   file_permission = "0644"
 
   content = yamlencode({
-    alb_url   = "http://${aws_lb.main.dns_name}/api/"
+    alb_url   = "http://${aws_lb.main.dns_name}/api"
     web_image = var.web_docker_image
   })
 }

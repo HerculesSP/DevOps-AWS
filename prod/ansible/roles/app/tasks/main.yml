@@ -1,3 +1,9 @@
+- name: Renderizar arquivo .env
+  ansible.builtin.template:
+    src: app.env.j2
+    dest: /opt/app/.env
+    mode: "0600"
+
 - name: Renderizar docker-compose
   ansible.builtin.template:
     src: docker-compose.yml.j2
