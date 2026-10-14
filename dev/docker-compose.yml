@@ -39,6 +39,26 @@ services:
       retries: 5
       start_period: 30s
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-dev
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: stockflow
+      RABBITMQ_DEFAULT_PASS: stockflow
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - dev
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   init-s3:
     image: amazon/aws-cli:latest
     container_name: init-s3
@@ -86,6 +106,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: dev
       DB_URL: jdbc:mysql://mysql:3306/stockflow?serverTimezone=America/Sao_Paulo&characterEncoding=UTF-8
@@ -97,6 +119,11 @@ services:
       AWS_ACCESS_KEY_ID: test
       AWS_SECRET_ACCESS_KEY: test
       AWS_S3_PATH_STYLE_ACCESS: "true"
+
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: stockflow
+      RABBITMQ_PASSWORD: stockflow
     networks:
       - dev
     healthcheck:
@@ -151,3 +178,4 @@ networks:
 volumes:
   floci-data:
   mysql-data:
+  rabbitmq-data:

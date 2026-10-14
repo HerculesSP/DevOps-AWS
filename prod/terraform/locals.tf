@@ -98,18 +98,6 @@ locals {
     blobs = {
       name = "blobs"
     }
-
-    raw = {
-      name = "bronze"
-    }
-
-    trusted = {
-      name = "silver"
-    }
-
-    client = {
-      name = "gold"
-    }
   }
 
   healthy_host_alarms = {
