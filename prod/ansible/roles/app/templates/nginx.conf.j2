@@ -3,10 +3,18 @@ upstream backend {
     server app2:8080;
 }
 
+log_format json_combined escape=json
+  '{"time_local":"$time_local","remote_addr":"$remote_addr",'
+  '"request_method":"$request_method","request_uri":"$request_uri",'
+  '"status":$status,"body_bytes_sent":$body_bytes_sent,'
+  '"http_user_agent":"$http_user_agent","request_time":$request_time}';
 
 server {
     listen 80;
     server_name _;
+
+    access_log /var/log/nginx/access.log json_combined;
+    error_log  /var/log/nginx/error.log warn;
 
     location ~ /(imagem|nota)$ {
         client_max_body_size 14M;

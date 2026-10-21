@@ -16,6 +16,18 @@
     dest: /opt/app/nginx/default.conf
     mode: "0644"
 
+- name: Criar diretório do Fluent Bit
+  ansible.builtin.file:
+    path: /opt/app/fluent-bit
+    state: directory
+    mode: "0755"
+
+- name: Renderizar configuração do Fluent Bit
+  ansible.builtin.template:
+    src: fluent-bit.conf.j2
+    dest: /opt/app/fluent-bit/fluent-bit.conf
+    mode: "0644"
+
 - name: Subir stack Docker Compose
   community.docker.docker_compose_v2:
     project_src: /opt/app

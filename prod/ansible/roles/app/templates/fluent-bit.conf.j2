@@ -1,0 +1,19 @@
+[SERVICE]
+    flush        5
+    log_level    warn
+
+[INPUT]
+    name   forward
+    listen 0.0.0.0
+    port   24224
+
+[OUTPUT]
+    name             s3
+    match            *
+    bucket           {{ s3 }}
+    region           us-east-1
+    store_dir        /fluent-bit/buffer/s3
+    total_file_size  10M
+    upload_timeout   5m
+    use_put_object   On
+    s3_key_format    /logs/$TAG/%Y/%m/%d/%H%M%S-{{ inventory_hostname }}-$UUID.log

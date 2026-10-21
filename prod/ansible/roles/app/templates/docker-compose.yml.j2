@@ -1,8 +1,46 @@
+x-logging: &logging
+  driver: fluentd
+  options:
+    fluentd-address: "127.0.0.1:24224"
+    fluentd-async: "true"
+    tag: "{% raw %}{{.Name}}{% endraw %}"
+
 services:
+  fluent-bit:
+    image: fluent/fluent-bit:3.2
+    container_name: fluent-bit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:24224:24224"
+    volumes:
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - fluent-bit-buffer:/fluent-bit/buffer
+
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      RABBITMQ_DEFAULT_USER: {{ rabbitmq_username }}
+      RABBITMQ_DEFAULT_PASS: {{ rabbitmq_password }}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   app1:
     image: {{ app_image }}
     container_name: app1
     restart: unless-stopped
+    logging: *logging
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - .env
     healthcheck:
@@ -16,6 +54,10 @@ services:
     image: {{ app_image }}
     container_name: app2
     restart: unless-stopped
+    logging: *logging
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - .env
     healthcheck:
@@ -29,6 +71,7 @@ services:
     image: nginx:alpine
     container_name: nginx
     restart: unless-stopped
+    logging: *logging
     depends_on:
       app1:
         condition: service_healthy
@@ -44,3 +87,7 @@ services:
       start_period: 60s
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  rabbitmq-data:
+  fluent-bit-buffer:
