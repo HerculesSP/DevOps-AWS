@@ -1,6 +1,6 @@
 resource "aws_wafv2_web_acl" "main" {
-  name        = "main-alb-waf"
-  scope       = "REGIONAL"
+  name  = "main-alb-waf"
+  scope = "REGIONAL"
 
   default_action {
     allow {}

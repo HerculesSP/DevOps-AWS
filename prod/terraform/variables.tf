@@ -186,7 +186,19 @@ variable "alert_email" {
 }
 
 variable "jwt_secret" {
-  type = string
+  type        = string
   description = "Secret para gerar JWT"
-  default = "supersecretkey1234567890AmandaDanielHerculesIsaakZaqueu"
+  default     = "supersecretkey1234567890AmandaDanielHerculesIsaakZaqueu"
+}
+
+variable "rabbitmq_username" {
+  type        = string
+  description = "Usuário do RabbitMQ local das instâncias de app"
+  default     = "stockflow"
+}
+
+variable "rabbitmq_password" {
+  type        = string
+  description = "Senha do RabbitMQ local das instâncias de app"
+  default     = "stockflow"
 }
